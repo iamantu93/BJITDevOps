@@ -1,0 +1,13 @@
+---
+# tasks file for mysql
+      - name: install Package in RedHat
+        yum:
+          name: "{{ package }}"
+          state: latest
+        when: ansible_os_family == "RedHat"
+      - name: Install package in Ubuntu
+        apt:
+          name: "{{ package }}"
+          state: latest
+        when: ansible_os_family == "Debian"
+

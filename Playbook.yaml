@@ -1,0 +1,74 @@
+---
+  - name: Playbook
+    hosts: multi
+    become: yes
+    become_user: root
+    vars:
+        port: 80
+        User: apache
+        package_redhat:
+        - epel-release
+        - httpd
+        - mariadb-server
+        - php
+        package_ubuntu:
+        - nginx
+        - mariadb-server
+        - php-common
+        - php
+        - php-fpm
+        - libapache2-mpm-itk
+
+    tasks:
+      - name: install Package in RedHat
+        yum:
+          name: "{{ package_redhat }}"
+          state: latest
+        when: ansible_os_family == "RedHat"
+      - name: Install package in Ubuntu
+        apt:
+          name: "{{ package_ubuntu }}"
+          state: latest
+        when: ansible_os_family == "Debian"
+      - name: ensure apache is running
+        service:
+          name: httpd
+          state: started
+        when: ansible_os_family == "RedHat"
+      - name: ensure nginx is running
+        service:
+          name: nginx
+          state: started
+        when: ansible_os_family == "Debian"
+      - name: Copy custom virualhost Redhat
+        copy:
+            src: files/httpd.conf.j2
+            dest: /etc/httpd/conf/httpd.conf
+            owner: root
+            group: root
+            mode: '0644'
+        notify: 
+        - Restart apache
+        changed_when: true
+        when: ansible_os_family == "RedHat"
+      - name: Open port 80 in Firewall
+        firewalld:
+            port: 80/tcp
+            permanent: yes
+            immediate: yes
+            state: enabled
+        when: ansible_os_family == "RedHat"
+      - name: allow http port in UFW
+        ufw:
+            rule: allow
+            port: 80
+            proto: tcp
+        when: ansible_os_family == "Debian"
+      - name: show php installed via apache
+        shell:
+            cmd: echo "echo '<?php phpinfo(); ?>'" > /var/www/html/index.php
+        when: ansible_os_family == "RedHat"
+    handlers:
+      - name: Restart apache
+        service: httpd
+        state: restarted 

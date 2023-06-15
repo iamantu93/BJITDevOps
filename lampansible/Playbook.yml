@@ -1,0 +1,10 @@
+---  
+  - name: Playbook
+    hosts: multi
+    become: yes
+    become_user: root
+    roles:
+      - php
+      - mysql
+      - apache
+     

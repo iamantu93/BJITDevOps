@@ -1,0 +1,14 @@
+[webservers]
+webserver1 ansible_host=192.168.1.100
+webserver2 ansible_host=192.168.1.101
+
+[databases]
+dbserver1 ansible_host=192.168.1.200
+dbserver2 ansible_host=192.168.1.201
+
+[loadbalancers]
+lbserver1 ansible_host=192.168.1.150
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_rsa

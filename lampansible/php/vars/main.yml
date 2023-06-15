@@ -1,0 +1,5 @@
+---
+# vars file for php
+package:
+- php
+- php-mysql

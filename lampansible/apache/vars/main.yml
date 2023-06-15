@@ -1,0 +1,9 @@
+---
+# vars file for apache
+        http_port: 80
+        http_host: localhost
+        package_redhat:
+        - epel-release
+        - httpd
+        package_ubuntu:
+        - apache2

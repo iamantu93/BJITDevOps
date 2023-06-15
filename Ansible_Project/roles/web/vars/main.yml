@@ -1,0 +1,4 @@
+---
+httpd_port: 80
+mysql_port: 3306
+repository: https://github.com/Debaice06/Ansible_Projects_Ecommerce.git

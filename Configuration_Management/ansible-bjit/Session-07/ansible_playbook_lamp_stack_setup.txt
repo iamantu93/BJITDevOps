@@ -1,0 +1,57 @@
+- name: Install and configure LAMP stack
+  hosts: myserver
+  become: true
+
+  tasks:
+    - name: Install Apache web server
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start Apache service
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Install PHP
+      yum:
+        name:
+          - php
+          - php-mysql
+        state: present
+
+    - name: Install MySQL server
+      yum:
+        name: mysql-server
+        state: present
+
+    - name: Start MySQL service
+      systemd:
+        name: mysqld
+        state: started
+        enabled: yes
+
+    - name: Set MySQL root password
+      mysql_user:
+        name: root
+        password: your_password_here
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: present
+
+    - name: Configure PHP settings
+      template:
+        src: php.ini.j2
+        dest: /etc/php.ini
+
+    - name: Configure Apache virtual host
+      template:
+        src: httpd-vhost.conf.j2
+        dest: /etc/httpd/conf.d/vhost.conf
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      systemd:
+        name: httpd
+        state: restarted

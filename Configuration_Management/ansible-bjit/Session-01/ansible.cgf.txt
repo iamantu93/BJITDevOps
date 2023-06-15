@@ -1,0 +1,53 @@
+[defaults]
+
+# Inventory file path
+inventory = /etc/ansible/hosts
+
+# Remote user name
+remote_user = deploy
+
+# SSH private key file
+private_key_file = /home/deploy/.ssh/id_rsa
+
+# Disable host key checking
+host_key_checking = True
+
+# Use a custom callback plugin
+stdout_callback = yaml
+
+# Use a vault password file
+vault_password_file = /home/deploy/.ansible/vault_password
+
+# Set the default module timeout to 60 seconds
+timeout = 60
+
+# Set the default number of forks to 10
+forks = 10
+
+# Enable fact gathering
+gather_facts = yes
+
+# Set the default ansible_python_interpreter to /usr/bin/python3
+ansible_python_interpreter = /usr/bin/python3
+
+# Enable pipelining
+pipelining = True
+
+# Limit the maximum number of parallel connections per host to 5
+max_parallel_connections = 5
+
+# Limit the maximum number of seconds to wait for a connection to a managed node
+timeout_connection = 10
+
+# Set the default remote shell to use
+# (bash is used by default, but you can change this to zsh, for example)
+# (Note: this option only works with the "command" and "shell" modules)
+# remote_shell = /bin/zsh
+
+# Set the default sudo user (if needed)
+# (Note: this option only works with the "command" and "shell" modules)
+# sudo_user = someuser
+
+# Set the default sudo password (if needed)
+# (Note: this option only works with the "command" and "shell" modules)
+# sudo_pass = somepassword
