@@ -10,6 +10,13 @@ Pass: 62r3Z3P8
 Pass: s6Y7XCHZ
 [AWS login](https://072262450408.signin.aws.amazon.com/console)
 
+--------------------------------
+|     AWS User Credentials     |
+--------------------------------
+| Account Id: 636981878437     |
+| Username: antu.acharjee      |
+--------------------------------
+
 
 # Linux Commands
 * ` ssh antu@192.168.56.101 ` 
