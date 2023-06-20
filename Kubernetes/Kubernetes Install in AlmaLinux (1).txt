@@ -1,0 +1,110 @@
+vim /etc/hosts
+vim /etc/hostname
+
+yum install vim -y
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl status firewalld
+
+vim /etc/selinux/config
+### Change enforcing to disabled
+
+Optional:
+sudo useradd -m -G wheel nazmul
+passwd nazmul
+usermod -aG wheel nazmul
+
+sudo modprobe overlay
+sudo modprobe br_netfilter 
+
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay 
+br_netfilter 
+EOF 
+
+
+cat <<EOF | 
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+EOF 
+sudo sysctl --system
+
+
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+sudo dnf install dnf-utils
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf repolist
+sudo dnf makecache 
+
+Slide:20
+sudo dnf install containerd.io
+sudo mv /etc/containerd/config.toml /etc/containerd/config.toml.orig
+sudo containerd config default > /etc/containerd/config.toml
+sudo vim /etc/containerd/config.toml 
+### Change in 125 line maybe, False to True
+
+sudo systemctl enable --now containerd
+
+sudo systemctl is-enabled containerd
+sudo systemctl status containerd 
+
+Slide:23
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+
+Slide:24
+sudo dnf repolist
+sudo dnf makecache
+sudo dnf install kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+Slide:25
+sudo systemctl enable --now kubelet
+
+<<<<<<<<<<<<<<<
+Till now Work is same for both work and master
+>>>>>>>>>>>>>>>
+
+Slide:26
+lsmod | grep br_netfilter 
+
+Slide:27
+sudo kubeadm config images pull 
+kubeadm init --control-plane-endpoint=192.168.20.136 --pod-network-cidr=10.10.0.0/16 --cri-socket=unix:///run/containerd/containerd.sock
+If there is any error:
+echo 1 > /proc/sys/net/ipv4/ip_forward
+Or, kubeadm reset
+
+Slide:29
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Maybe not needed:
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+kubectl cluster-info 
+
+Slide:30
+yum install wget
+wget https://raw.githubusercontent.com/projectcalico/calico/master/manifests/calico.yaml
+kubectl apply -f calico.yaml
+kubectl get pods --all-namespaces
+
+Worker1 Node Run:
+### Use you own code: When initialize is successful according to slide 27, use the 2nd code given in that text
+kubeadm join 192.168.20.136:6443 --token qn64gj.3glt7jlum6hyj49p --discovery-token-ca-cert-hash sha256:24c68b7721809e81a80bc993aee059d62cffbc7944daa7bdd5f9652776200670
+
+Slide:31
+kubectl get nodes -o wide
+
+
+
