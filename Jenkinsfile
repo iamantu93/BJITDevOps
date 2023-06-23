@@ -1,36 +1,34 @@
 pipeline {
-    agent { label 'slave-node' }
+    agent any
 parameters {
         string(name: 'PERSON', defaultValue: 'Antu Acharjee', description: 'Who should I say hello to?')
         choice(name: 'DEPARTMENT', choices: ['DevOps', 'Java EE', 'iOS', 'Android'], description: 'Pick a department')
 
     }
 tools {
-    maven 'Maven-3.9.1' 
-    jdk 'Jdk-17'
-    git 'git-2.40'
+    //maven 'Maven-3.9.1' 
+    //jdk 'Jdk-17'
+    git 'Default'
 }
 stages {
     stage('git clone') {
         steps {
             echo 'cloning git repository'
-            git branch: 'main', url: 'https://github.com/antu-acharjee/git-exam.git'
+            git branch: 'master', url: 'https://github.com/iamantu93/docker-practice.git'
 
         } 
     }   
     stage('Build stage') {
         steps {
-            echo 'This is build stage'
+            script {
+                echo 'This is build stage'
+                customImage=docker.build('iamantu93/anturepo:jenkins')
+                 customImage.push('jenkins')
+            }
 
         } 
     }
-    stage('Script execute') {
-        steps {
-            echo 'This is Script execute stage'
-           
-            bat 'antu.bat' 
-        } 
-    }
+
     stage('Test stage') {
         steps {
             echo 'This is Test stage'
@@ -39,6 +37,11 @@ stages {
     stage('Deploy stage') {
         steps {
             echo 'This is deploy stage'
+            script {
+                kubeconfig(credentialsId: 'kubeconf', serverUrl: '192.168.20.210') {
+                    sh '/usr/bin/kubectl apply -f kubedeploy.yml'
+                }
+            }
         } 
     }
  }
