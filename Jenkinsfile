@@ -5,6 +5,9 @@ parameters {
         choice(name: 'DEPARTMENT', choices: ['DevOps', 'Java EE', 'iOS', 'Android'], description: 'Pick a department')
 
     }
+    triggers {
+ pollSCM('H/2 * * * *') // Polls the SCM every 2 minutes
+ }
 tools {
     //maven 'Maven-3.9.1' 
     //jdk 'Jdk-17'
